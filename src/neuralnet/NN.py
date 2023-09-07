@@ -1,3 +1,3 @@
 class NN:
-    def __init__(self):
-        pass
+    def __init__(self, layers = []):
+        self.layers = layers
