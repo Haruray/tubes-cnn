@@ -1,4 +1,4 @@
-import Layer
+from neuralnet.Layer import Layer
 class Flatten(Layer):
     def __init__(self):
         super().__init__()

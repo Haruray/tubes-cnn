@@ -1,5 +1,7 @@
-import Layer
+from neuralnet.Layer import Layer
+
+
 class Dense(Layer):
     def __init__(self):
         super().__init__()
-        self.type = 'dense'
+        self.type = "dense"
