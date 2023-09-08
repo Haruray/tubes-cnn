@@ -33,6 +33,7 @@ class ConvLayer(Layer):
         i = j = 0
         # loop matrix gambarnya buat ekstraksi fitur
         while i < height:
+            j = 0
             while j < width:
                 if (
                     i + self.filter_size[0] <= height
@@ -53,7 +54,9 @@ class ConvLayer(Layer):
         # kita tambahkan padding pada matrix gambar
         og_height = input.shape[0]
         og_width = input.shape[1]
-        input.resize((og_height + self.padding, og_width + self.padding, 3), refcheck=False)
+        input.resize(
+            (og_height + self.padding, og_width + self.padding, 3), refcheck=False
+        )
         # modified height and width
         height = input.shape[0]
         # berdasarkan rumus di ppt...i think
@@ -63,6 +66,8 @@ class ConvLayer(Layer):
         feature_map = np.zeros((feature_map_v, feature_map_v, self.num_filters))
         for region, i, j in self.iterate(input):
             # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..
-            feature_map[i, j] = np.sum(region * self.filter) # sepertinya masih salah
+            feature_map[i, j] = np.sum(region * self.filter)  # sepertinya masih salah
+            # print(i,j)
+        print(feature_map.shape)
 
         return feature_map
