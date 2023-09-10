@@ -1,6 +1,5 @@
 # tubes-cnn
 
-Note : yg ConvLayer aku lagi coba-coba, tapi belum berhasil. Masih error
 
 Referensi : 
 - https://towardsdatascience.com/building-convolutional-neural-network-using-numpy-from-scratch-b30aac50e50a
