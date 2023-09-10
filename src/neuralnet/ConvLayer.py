@@ -86,5 +86,5 @@ class ConvLayer(Layer):
         for channel in input_channels:
             for region, i, j in self.iterate(channel):
                 # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..
-                feature_map[i, j] += np.sum(region * self.filter, axis=(1,2))
+                feature_map[i, j] += np.sum(region * self.filter)
         return feature_map
