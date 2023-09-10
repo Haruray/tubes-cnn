@@ -11,7 +11,7 @@ class ConvLayer(Layer):
         num_filters: int,
         filter_size: tuple,
         stride: int,
-        detector_function: str
+        detector_function: str,
     ):
         super().__init__()
         self.type = "conv2d"
@@ -21,35 +21,42 @@ class ConvLayer(Layer):
         self.num_filters = num_filters
         self.filter_size = filter_size
         self.stride = stride
-        #detector function
-        if (detector_function == 'relu'): self.detector_function = Relu()
-        elif (detector_function == 'softmax'): self.detector_function = Softmax()
-        elif (detector_function == 'sigmoid'): self.detector_function = Sigmoid()
-        else: raise Exception('Activation function not recognized.')
+        # detector function
+        if detector_function == "relu":
+            self.detector_function = Relu()
+        elif detector_function == "softmax":
+            self.detector_function = Softmax()
+        elif detector_function == "sigmoid":
+            self.detector_function = Sigmoid()
+        else:
+            raise Exception("Activation function not recognized.")
 
         # weight
-        self.filter = np.random.randn(
-            self.num_filters, self.filter_size[0], self.filter_size[1]
-        ) * 0.1
+        self.filter = (
+            np.random.randn(self.num_filters, self.filter_size[0], self.filter_size[1])
+            * 0.1
+        )
 
-    def get_image_channels(self, matrix:np.ndarray):
+    def get_image_channels(self, matrix: np.ndarray):
         channels = []
-        if (len(matrix.shape) == 3):
+        if len(matrix.shape) == 3:
             for i in range(matrix.shape[2]):
-                channels.append(matrix[:,:,i])
+                channels.append(matrix[:, :, i])
         else:
-            return [matrix] #berarti dia single channel
+            return [matrix]  # berarti dia single channel
         return channels
 
-    def check_image_filter_validity(self, matrix:np.ndarray):
-        #check if the image matrix have multi channel (rgb) or not, and match it with the filter size
-        if (len(matrix.shape) == 3):
+    def check_image_filter_validity(self, matrix: np.ndarray):
+        # check if the image matrix have multi channel (rgb) or not, and match it with the filter size
+        if len(matrix.shape) == 3:
             return matrix.shape[2] == self.filter_size[1]
-        else : return True
+        else:
+            return True
 
     def iterate(self, matrix: np.ndarray):
-        if (not self.check_image_filter_validity(matrix)): raise Exception('Error : Number of image channel and filter don\'t match')
-        
+        if not self.check_image_filter_validity(matrix):
+            raise Exception("Error : Number of image channel and filter don't match")
+
         height = matrix.shape[0]
         width = matrix.shape[1]
         # center of filter matrix
@@ -67,23 +74,30 @@ class ConvLayer(Layer):
                         i : (i + self.filter_size[0]), j : (j + self.filter_size[1])
                     ]
                     # bagian (region) dari matrix yang sudah di ekstrak , koordinat x pada feature map, koordinat y pada feature map
-                    idx_i = max(0, i if self.padding == 0 else i + center[0] - self.padding)
-                    idx_j = max(0,j if self.padding == 0 else j + center[1] - self.padding)
+                    idx_i = max(
+                        0, i if self.padding == 0 else i + center[0] - self.padding
+                    )
+                    idx_j = max(
+                        0, j if self.padding == 0 else j + center[1] - self.padding
+                    )
                     yield region, idx_i, idx_j
                 j += self.stride
             i += self.stride
-    def detector(self, matrix:np.ndarray):
+
+    def detector(self, matrix: np.ndarray):
         return self.detector_function.calculate(matrix)
-    
+
     def forward_propagate(self, input: np.ndarray):
-        if (not self.check_image_filter_validity(input)): raise Exception('Error : Number of image channel and filter don\'t match')
+        if not self.check_image_filter_validity(input):
+            raise Exception("Error : Number of image channel and filter don't match")
         # input adalah matrix gambar
         # kita tambahkan padding pada matrix gambar
         og_height = input.shape[0]
         og_width = input.shape[1]
-        if (len(input.shape) == 3):
+        if len(input.shape) == 3:
             input.resize(
-                (og_height + self.padding, og_width + self.padding, input.shape[2]), refcheck=False
+                (og_height + self.padding, og_width + self.padding, input.shape[2]),
+                refcheck=False,
             )
         else:
             input.resize(
