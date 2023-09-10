@@ -6,6 +6,9 @@ class Pooling(Layer):
     # intinya sama kaya ConvLayer, yaitu pada proses ekstraksinya. Yang berbeda adalah pada pemrosesannya, yaitu max/avg pooling
     def __init__(self, mode: str, pool_size: tuple, stride: int):
         super().__init__()
+        # type check
+        if mode != "avg" and mode != "max":
+            raise Exception("Mode not recognized.")
         self.type = "pooling"
         self.mode = mode
         self.pool_size = pool_size
@@ -20,11 +23,9 @@ class Pooling(Layer):
             return [matrix]  # berarti dia single channel
         return channels
 
-    def iterate(self, matrix: np.ndarray):
-        height = matrix.shape[0]
-        width = matrix.shape[1]
-        new_height = height // self.pool_size[0]
-        new_width = width // self.pool_size[1]
+    def extract_features(self, matrix: np.ndarray, output_shape: tuple):
+        new_height = output_shape[0]
+        new_width = output_shape[1]
         i = j = 0
         # loop matrix gambarnya buat ekstraksi fitur
         while i < new_height:
@@ -55,13 +56,14 @@ class Pooling(Layer):
         num_filters = input.shape[2]
         # sama kaya rumus ukuran feature map kaya ConvLayer, cuma gapakai padding
         feature_map_v = int((height - self.pool_size[0]) / self.stride) + 1
-        feature_map = np.zeros((feature_map_v, feature_map_v, num_filters))
+        feature_map_shape = (feature_map_v, feature_map_v, num_filters)
+        feature_map = np.zeros(feature_map_shape)
         input_channels = self.get_image_channels(input)
         for channel in input_channels:
-            for region, i, j in self.iterate(channel):
+            for region, i, j in self.extract_features(channel, feature_map_shape):
                 # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..
                 if self.mode == "max":
-                    feature_map[i, j] = np.amax(region)
+                    feature_map[i, j] = np.max(region)
                 elif self.mode == "avg":
                     feature_map[i, j] = np.average(region)
         return feature_map

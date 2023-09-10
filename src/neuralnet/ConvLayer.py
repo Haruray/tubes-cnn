@@ -21,6 +21,9 @@ class ConvLayer(Layer):
         self.num_filters = num_filters
         self.filter_size = filter_size
         self.stride = stride
+        # check if input_shape and filter_size valid
+        if not self.check_image_filter_validity():
+            raise Exception("Error : Number of image channel and filter don't match")
         # detector function
         if detector_function == "relu":
             self.detector_function = Relu()
@@ -46,17 +49,14 @@ class ConvLayer(Layer):
             return [matrix]  # berarti dia single channel
         return channels
 
-    def check_image_filter_validity(self, matrix: np.ndarray):
+    def check_image_filter_validity(self):
         # check if the image matrix have multi channel (rgb) or not, and match it with the filter size
-        if len(matrix.shape) == 3:
-            return matrix.shape[2] == self.filter_size[1]
+        if len(self.input_shape) == 3:
+            return self.input_shape[2] == self.filter_size[1]
         else:
             return True
 
-    def iterate(self, matrix: np.ndarray):
-        if not self.check_image_filter_validity(matrix):
-            raise Exception("Error : Number of image channel and filter don't match")
-
+    def extract_features(self, matrix: np.ndarray):
         height = matrix.shape[0]
         width = matrix.shape[1]
         # center of filter matrix
@@ -66,10 +66,7 @@ class ConvLayer(Layer):
         while i < height:
             j = 0
             while j < width:
-                if (
-                    i + self.filter_size[0] < height
-                    and j + self.filter_size[1] < width
-                ):
+                if i + self.filter_size[0] < height and j + self.filter_size[1] < width:
                     region = matrix[
                         i : (i + self.filter_size[0]), j : (j + self.filter_size[1])
                     ]
@@ -88,8 +85,6 @@ class ConvLayer(Layer):
         return self.detector_function.calculate(matrix)
 
     def forward_propagate(self, input: np.ndarray):
-        if not self.check_image_filter_validity(input):
-            raise Exception("Error : Number of image channel and filter don't match")
         # input adalah matrix gambar
         # kita tambahkan padding pada matrix gambar
         og_height = input.shape[0]
@@ -112,7 +107,7 @@ class ConvLayer(Layer):
         feature_map = np.zeros((feature_map_v, feature_map_v, self.num_filters))
         input_channels = self.get_image_channels(input)
         for channel in input_channels:
-            for region, i, j in self.iterate(channel):
+            for region, i, j in self.extract_features(channel):
                 # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..
                 feature_map[i, j] += np.sum(region * self.filter)
 
