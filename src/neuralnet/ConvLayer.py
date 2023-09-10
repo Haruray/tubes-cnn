@@ -25,7 +25,22 @@ class ConvLayer(Layer):
             self.num_filters, self.filter_size[0], self.filter_size[1]
         )
 
+    def get_image_channels(self, matrix:np.ndarray):
+        channels = []
+        if (len(matrix.shape) == 3):
+            for i in range(matrix.shape[2]):
+                channels.append(matrix[:,:,i])
+        return channels
+
+    def check_image_filter_validity(self, matrix:np.ndarray):
+        #check if the image matrix have multi channel (rgb) or not, and match it with the filter size
+        if (len(matrix.shape) == 3):
+            return matrix.shape[2] == self.filter_size[1]
+        else : return True
+
     def iterate(self, matrix: np.ndarray):
+        if (not self.check_image_filter_validity(matrix)): raise Exception('Error : Number of image channel and filter don\'t match')
+        
         height = matrix.shape[0]
         width = matrix.shape[1]
         # center of filter matrix
@@ -43,13 +58,14 @@ class ConvLayer(Layer):
                         i : (i + self.filter_size[0]), j : (j + self.filter_size[1])
                     ]
                     # bagian (region) dari matrix yang sudah di ekstrak , koordinat x pada feature map, koordinat y pada feature map
-                    idx_i = i if self.padding == 0 else i + center[0] - self.padding
-                    idx_j = j if self.padding == 0 else j + center[1] - self.padding
+                    idx_i = max(0, i if self.padding == 0 else i + center[0] - self.padding)
+                    idx_j = max(0,j if self.padding == 0 else j + center[1] - self.padding)
                     yield region, idx_i, idx_j
                 j += self.stride
             i += self.stride
 
     def forward_propagate(self, input: np.ndarray):
+        if (not self.check_image_filter_validity(input)): raise Exception('Error : Number of image channel and filter don\'t match')
         # input adalah matrix gambar
         # kita tambahkan padding pada matrix gambar
         og_height = input.shape[0]
@@ -64,10 +80,9 @@ class ConvLayer(Layer):
             int((height - self.filter_size[0] + 2 * self.padding) / self.stride) + 1
         )
         feature_map = np.zeros((feature_map_v, feature_map_v, self.num_filters))
-        for region, i, j in self.iterate(input):
-            # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..
-            feature_map[i, j] = np.sum(region * self.filter)  # sepertinya masih salah
-            # print(i,j)
-        print(feature_map.shape)
-
+        input_channels = self.get_image_channels(input)
+        for channel in input_channels:
+            for region, i, j in self.iterate(channel):
+                # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..
+                feature_map[i, j] += np.sum(region * self.filter, axis=(1,2))
         return feature_map
