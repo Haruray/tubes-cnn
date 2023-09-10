@@ -1,7 +1,22 @@
 # tubes-cnn
 
 ## Penjelasan input gambar
-Input gambar berupa matrix numpy dengan shape (height, weight, channel). Namun, Convolution layer juga menangani bentuk numpy array (height, weight) saja, yang berarti juga menangani gambar grayscaled
+Input gambar berupa matrix numpy dengan shape `(height, weight, channel)`. Namun, Convolution layer juga menangani bentuk numpy array `(height, weight)` saja, yang berarti juga menangani gambar grayscaled
+
+## To do list
+- Convolution Layer ✅
+- Detector ✅
+- Pooling ✅
+- Flatten Layer 
+- Dense Layer
+- Data preprocess untuk prediksi gambar
+
+## Info
+kalau misal develop lewat VS Code dan dapet ini saat run pythonnya :
+```
+[ WARN:0@0.102] global loadsave.cpp:248 cv::findDecoder imread_('251.jpeg'): can't open/read file: check file path/integrity
+```
+Maka cara fix nya tinggal jalankan `cd src` di cmd nya
 
 Referensi : 
 - https://www.kaggle.com/code/milan400/cnn-from-scratch-numpy/notebook
