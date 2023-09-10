@@ -30,6 +30,8 @@ class ConvLayer(Layer):
         if (len(matrix.shape) == 3):
             for i in range(matrix.shape[2]):
                 channels.append(matrix[:,:,i])
+        else:
+            return [matrix] #berarti dia single channel
         return channels
 
     def check_image_filter_validity(self, matrix:np.ndarray):
