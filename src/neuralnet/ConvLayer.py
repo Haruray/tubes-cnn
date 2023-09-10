@@ -1,4 +1,5 @@
 from neuralnet.Layer import Layer
+from neuralnet.Activation import *
 import numpy as np
 
 
@@ -10,6 +11,7 @@ class ConvLayer(Layer):
         num_filters: int,
         filter_size: tuple,
         stride: int,
+        detector_function: str
     ):
         super().__init__()
         self.type = "conv2d"
@@ -19,11 +21,16 @@ class ConvLayer(Layer):
         self.num_filters = num_filters
         self.filter_size = filter_size
         self.stride = stride
+        #detector function
+        if (detector_function == 'relu'): self.detector_function = Relu()
+        elif (detector_function == 'softmax'): self.detector_function = Softmax()
+        elif (detector_function == 'sigmoid'): self.detector_function = Sigmoid()
+        else: raise Exception('Activation function not recognized.')
 
         # weight
         self.filter = np.random.randn(
             self.num_filters, self.filter_size[0], self.filter_size[1]
-        )
+        ) * 0.1
 
     def get_image_channels(self, matrix:np.ndarray):
         channels = []
@@ -65,16 +72,23 @@ class ConvLayer(Layer):
                     yield region, idx_i, idx_j
                 j += self.stride
             i += self.stride
-
+    def detector(self, matrix:np.ndarray):
+        return self.detector_function.calculate(matrix)
+    
     def forward_propagate(self, input: np.ndarray):
         if (not self.check_image_filter_validity(input)): raise Exception('Error : Number of image channel and filter don\'t match')
         # input adalah matrix gambar
         # kita tambahkan padding pada matrix gambar
         og_height = input.shape[0]
         og_width = input.shape[1]
-        input.resize(
-            (og_height + self.padding, og_width + self.padding, 3), refcheck=False
-        )
+        if (len(input.shape) == 3):
+            input.resize(
+                (og_height + self.padding, og_width + self.padding, input.shape[2]), refcheck=False
+            )
+        else:
+            input.resize(
+                (og_height + self.padding, og_width + self.padding), refcheck=False
+            )
         # modified height and width
         height = input.shape[0]
         # berdasarkan rumus di ppt...i think
@@ -87,4 +101,7 @@ class ConvLayer(Layer):
             for region, i, j in self.iterate(channel):
                 # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..
                 feature_map[i, j] += np.sum(region * self.filter)
+
+        feature_map = self.detector(feature_map)
+
         return feature_map
