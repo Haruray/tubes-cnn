@@ -60,19 +60,17 @@ class ConvLayer(Layer):
         height = output_shape[0]
         width = output_shape[1]
         features = []
-        # center of filter matrix
-        center = (self.filter_size[0] // 2, self.filter_size[1] // 2)
         i = j = 0
         # loop matrix gambarnya buat ekstraksi fitur
         while i < height:
             j = 0
             while j < width:
                 if i + self.filter_size[0] < height and j + self.filter_size[1] < width:
-                    region = matrix[
+                    feat = matrix[
                         i : (i + self.filter_size[0]), j : (j + self.filter_size[1])
                     ]
                     # bagian (region) dari matrix yang sudah di ekstrak , koordinat x pada feature map, koordinat y pada feature map
-                    features.append((region, i, j))
+                    features.append((feat, i, j))
                 j += self.stride
             i += self.stride
         return features

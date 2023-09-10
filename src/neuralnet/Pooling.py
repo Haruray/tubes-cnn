@@ -36,7 +36,7 @@ class Pooling(Layer):
                     i + self.pool_size[0] < new_height
                     and j + self.pool_size[1] < new_width
                 ):
-                    region = matrix[
+                    feat = matrix[
                         i
                         * self.pool_size[0] : (
                             i * self.pool_size[0] + self.pool_size[0]
@@ -47,7 +47,7 @@ class Pooling(Layer):
                         ),
                     ]
                     # bagian (region) dari matrix yang sudah di ekstrak , koordinat x pada feature map, koordinat y pada feature map
-                    features.append((region, i, j))
+                    features.append((feat, i, j))
                 j += self.stride
             i += self.stride
         return features
