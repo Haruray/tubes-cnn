@@ -67,8 +67,8 @@ class ConvLayer(Layer):
             j = 0
             while j < width:
                 if (
-                    i + self.filter_size[0] <= height
-                    and j + self.filter_size[1] <= width
+                    i + self.filter_size[0] < height
+                    and j + self.filter_size[1] < width
                 ):
                     region = matrix[
                         i : (i + self.filter_size[0]), j : (j + self.filter_size[1])
