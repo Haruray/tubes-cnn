@@ -56,9 +56,9 @@ class ConvLayer(Layer):
         else:
             return True
 
-    def extract_features(self, matrix: np.ndarray):
-        height = matrix.shape[0]
-        width = matrix.shape[1]
+    def extract_features(self, matrix: np.ndarray, output_shape: tuple):
+        height = output_shape[0]
+        width = output_shape[1]
         features = []
         # center of filter matrix
         center = (self.filter_size[0] // 2, self.filter_size[1] // 2)
@@ -72,13 +72,7 @@ class ConvLayer(Layer):
                         i : (i + self.filter_size[0]), j : (j + self.filter_size[1])
                     ]
                     # bagian (region) dari matrix yang sudah di ekstrak , koordinat x pada feature map, koordinat y pada feature map
-                    idx_i = max(
-                        0, i if self.padding == 0 else i + center[0] - self.padding
-                    )
-                    idx_j = max(
-                        0, j if self.padding == 0 else j + center[1] - self.padding
-                    )
-                    features.append((region, idx_i, idx_j))
+                    features.append((region, i, j))
                 j += self.stride
             i += self.stride
         return features
@@ -106,10 +100,11 @@ class ConvLayer(Layer):
         feature_map_v = (
             int((height - self.filter_size[0] + 2 * self.padding) / self.stride) + 1
         )
-        feature_map = np.zeros((feature_map_v, feature_map_v, self.num_filters))
+        feature_map_shape = (feature_map_v, feature_map_v, self.num_filters)
+        feature_map = np.zeros(feature_map_shape)
         input_channels = self.get_image_channels(input)
         for channel in input_channels:
-            features = self.extract_features(channel)
+            features = self.extract_features(channel, feature_map_shape)
             for feat in features:
                 region, i, j = feat
                 # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..

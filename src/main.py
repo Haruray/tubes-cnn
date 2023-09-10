@@ -10,13 +10,14 @@ conv = ConvLayer(
     padding=0,
     num_filters=1,
     filter_size=(3, 3),
-    stride=1,
+    stride=2,
     detector_function="relu",
 )
 pool = Pooling(mode="avg", pool_size=(2, 2), stride=2)
 
 conved = conv.forward_propagate(image)
 conved = pool.forward_propagate(conved)
+print(image.shape)
 print(conved.shape)
 cv2.imshow("image", conved)
 
