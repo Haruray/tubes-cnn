@@ -59,6 +59,7 @@ class ConvLayer(Layer):
     def extract_features(self, matrix: np.ndarray):
         height = matrix.shape[0]
         width = matrix.shape[1]
+        features = []
         # center of filter matrix
         center = (self.filter_size[0] // 2, self.filter_size[1] // 2)
         i = j = 0
@@ -77,9 +78,10 @@ class ConvLayer(Layer):
                     idx_j = max(
                         0, j if self.padding == 0 else j + center[1] - self.padding
                     )
-                    yield region, idx_i, idx_j
+                    features.append((region, idx_i, idx_j))
                 j += self.stride
             i += self.stride
+        return features
 
     def detector(self, matrix: np.ndarray):
         return self.detector_function.calculate(matrix)
@@ -107,7 +109,9 @@ class ConvLayer(Layer):
         feature_map = np.zeros((feature_map_v, feature_map_v, self.num_filters))
         input_channels = self.get_image_channels(input)
         for channel in input_channels:
-            for region, i, j in self.extract_features(channel):
+            features = self.extract_features(channel)
+            for feat in features:
+                region, i, j = feat
                 # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..
                 feature_map[i, j] += np.sum(region * self.filter)
 

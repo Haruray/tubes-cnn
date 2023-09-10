@@ -27,6 +27,7 @@ class Pooling(Layer):
         new_height = output_shape[0]
         new_width = output_shape[1]
         i = j = 0
+        features = []
         # loop matrix gambarnya buat ekstraksi fitur
         while i < new_height:
             j = 0
@@ -46,9 +47,10 @@ class Pooling(Layer):
                         ),
                     ]
                     # bagian (region) dari matrix yang sudah di ekstrak , koordinat x pada feature map, koordinat y pada feature map
-                    yield region, i, j
+                    features.append((region, i, j))
                 j += self.stride
             i += self.stride
+        return features
 
     def forward_propagate(self, input: np.ndarray):
         # input adalah feature map hasil conv layer
@@ -60,7 +62,9 @@ class Pooling(Layer):
         feature_map = np.zeros(feature_map_shape)
         input_channels = self.get_image_channels(input)
         for channel in input_channels:
-            for region, i, j in self.extract_features(channel, feature_map_shape):
+            features = self.extract_features(channel, feature_map_shape)
+            for feat in features:
+                region, i, j = feat
                 # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..
                 if self.mode == "max":
                     feature_map[i, j] = np.max(region)
