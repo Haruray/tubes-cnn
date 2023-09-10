@@ -1,7 +1,7 @@
 from neuralnet.Layer import Layer
 
 
-class MaxPooling(Layer):
+class Pooling(Layer):
     def __init__(self):
         super().__init__()
         self.type = "max_pooling2d"
