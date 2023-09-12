@@ -7,17 +7,17 @@ class ConvLayer(Layer):
     def __init__(
         self,
         input_shape: tuple,
-        padding: int,
         num_filters: int,
         filter_size: tuple,
         stride: int,
         detector_function: str,
+        padding: int = 0,
     ):
         super().__init__()
         self.type = "conv2d"
         # defined parameters
         self.input_shape = input_shape
-        self.padding = padding
+        self.padding = max(0, padding)
         self.num_filters = num_filters
         self.filter_size = filter_size
         self.stride = stride
@@ -70,7 +70,13 @@ class ConvLayer(Layer):
                         i : (i + self.filter_size[0]), j : (j + self.filter_size[1])
                     ]
                     # bagian (region) dari matrix yang sudah di ekstrak , koordinat x pada feature map, koordinat y pada feature map
-                    features.append((feat, i, j))
+                    idx_i = i + int(
+                        self.filter_size[0] / 2
+                    )  # cari index tengah-tengah matriksnya
+                    idx_j = j + int(
+                        self.filter_size[1] / 2
+                    )  # cari index tengah-tengah matriksnya
+                    features.append((feat, idx_i, idx_j))
                 j += self.stride
             i += self.stride
         return features
@@ -106,7 +112,8 @@ class ConvLayer(Layer):
             for feat in features:
                 region, i, j = feat
                 # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..
-                feature_map[i, j] += np.sum(region * self.filter)
+                if (i < feature_map_v) and (j < feature_map_v):
+                    feature_map[i, j] += np.sum(region * self.filter)
 
         feature_map = self.detector(feature_map)
 
