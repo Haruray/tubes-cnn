@@ -4,7 +4,7 @@
 Input gambar berupa matrix numpy dengan shape `(height, weight, channel)`. Namun, Convolution layer juga menangani bentuk numpy array `(height, weight)` saja, yang berarti juga menangani gambar grayscaled
 
 ## To do list
-- Convolution Layer ✅
+- Convolution Layer (almost done, kurang bias)
 - Detector ✅
 - Pooling ✅
 - Flatten Layer 
