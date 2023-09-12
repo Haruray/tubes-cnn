@@ -10,6 +10,7 @@ Input gambar berupa matrix numpy dengan shape `(height, weight, channel)`. Namun
 - Flatten Layer 
 - Dense Layer
 - Data preprocess untuk prediksi gambar
+- Proses Inference nya (Pembuatan Model)
 
 ## Info
 kalau misal develop lewat VS Code dan dapet ini saat run pythonnya :
