@@ -13,6 +13,17 @@ class Pooling(Layer):
         self.mode = mode
         self.pool_size = pool_size
         self.stride = stride
+        self.feature_map_shape = None
+        
+
+    def calculate_feature_map_shape(self, input_shape:tuple):
+        # input adalah feature map hasil conv layer
+        height = input_shape[0]
+        num_filters = input_shape[2]
+        # sama kaya rumus ukuran feature map kaya ConvLayer, cuma gapakai padding
+        feature_map_v = int((height - self.pool_size[0]) / self.stride) + 1
+        self.feature_map_shape = (feature_map_v, feature_map_v, num_filters)
+        return self.feature_map_shape
 
     def get_image_channels(self, matrix: np.ndarray):
         channels = []
@@ -53,16 +64,10 @@ class Pooling(Layer):
         return features
 
     def forward_propagate(self, input: np.ndarray):
-        # input adalah feature map hasil conv layer
-        height = input.shape[0]
-        num_filters = input.shape[2]
-        # sama kaya rumus ukuran feature map kaya ConvLayer, cuma gapakai padding
-        feature_map_v = int((height - self.pool_size[0]) / self.stride) + 1
-        feature_map_shape = (feature_map_v, feature_map_v, num_filters)
-        feature_map = np.zeros(feature_map_shape)
+        feature_map = np.zeros(self.feature_map_shape)
         input_channels = self.get_image_channels(input)
         for channel in input_channels:
-            features = self.extract_features(channel, feature_map_shape)
+            features = self.extract_features(channel, self.feature_map_shape)
             for feat in features:
                 region, i, j = feat
                 # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..

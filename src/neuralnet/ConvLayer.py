@@ -33,12 +33,24 @@ class ConvLayer(Layer):
             self.detector_function = Sigmoid()
         else:
             raise Exception("Activation function not recognized.")
-
+        
+        # Calculate feature map size
+        self.calculate_feature_map_shape(self.input_shape)
+        
         # weight
         self.filter = (
             np.random.randn(self.num_filters, self.filter_size[0], self.filter_size[1])
             * 0.1
         )
+
+    def calculate_feature_map_shape(self, input_shape:tuple):
+        # berdasarkan rumus di ppt...i think
+        height = input_shape[0]
+        self.feature_map_v = (
+            int((height - self.filter_size[0] + 2 * self.padding) / self.stride) + 1
+        )
+        self.feature_map_shape = (self.feature_map_v, self.feature_map_v, self.num_filters)
+        return self.feature_map_shape
 
     def get_image_channels(self, matrix: np.ndarray):
         channels = []
@@ -100,19 +112,14 @@ class ConvLayer(Layer):
             )
         # modified height and width
         height = input.shape[0]
-        # berdasarkan rumus di ppt...i think
-        feature_map_v = (
-            int((height - self.filter_size[0] + 2 * self.padding) / self.stride) + 1
-        )
-        feature_map_shape = (feature_map_v, feature_map_v, self.num_filters)
-        feature_map = np.zeros(feature_map_shape)
+        feature_map = np.zeros(self.feature_map_shape)
         input_channels = self.get_image_channels(input)
         for channel in input_channels:
-            features = self.extract_features(channel, feature_map_shape)
+            features = self.extract_features(channel, self.feature_map_shape)
             for feat in features:
                 region, i, j = feat
                 # bagian (region) yang sudah di ekstrak di kalikan dengan filter yang ada. Argumen "axis" aku belum tau buat apa..
-                if (i < feature_map_v) and (j < feature_map_v):
+                if (i < self.feature_map_v) and (j < self.feature_map_v):
                     feature_map[i, j] += np.sum(region * self.filter)
 
         feature_map = self.detector(feature_map)

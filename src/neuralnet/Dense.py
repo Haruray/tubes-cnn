@@ -8,6 +8,7 @@ class Dense(Layer):
 
         self.type = "dense"
         self.num_units = num_units
+        self.feature_map_shape = num_units
 
         # detector function
         if detector_function == "relu":
@@ -30,3 +31,6 @@ class Dense(Layer):
         output = np.dot(input, self.weights.T) + self.biases # forward propagate
         output = self.detector_function.calculate(output) # activation 
         return output
+    
+    def calculate_feature_map_shape(self, input: tuple):
+        return self.feature_map_shape
