@@ -20,7 +20,7 @@ class ConvLayer(Layer):
         self.padding = max(0, padding)
         self.num_filters = num_filters
         self.filter_size = filter_size
-        self.stride = stride
+        self.stride = max(1, stride)
         # check if input_shape and filter_size valid
         if not self.check_image_filter_validity():
             raise Exception("Error : Number of image channel and filter don't match")
