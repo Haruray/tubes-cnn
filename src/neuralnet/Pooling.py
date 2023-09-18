@@ -14,9 +14,8 @@ class Pooling(Layer):
         self.pool_size = pool_size
         self.stride = stride
         self.feature_map_shape = None
-        
 
-    def calculate_feature_map_shape(self, input_shape:tuple):
+    def calculate_feature_map_shape(self, input_shape: tuple):
         # input adalah feature map hasil conv layer
         height = input_shape[0]
         num_filters = input_shape[2]

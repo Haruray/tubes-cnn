@@ -10,6 +10,6 @@ class Layer:
 
     def backpropagate(self, out: np.ndarray):
         pass
-    
-    def calculate_feature_map_shape(self, input:tuple):
+
+    def calculate_feature_map_shape(self, input: tuple):
         pass

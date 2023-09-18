@@ -33,23 +33,26 @@ class ConvLayer(Layer):
             self.detector_function = Sigmoid()
         else:
             raise Exception("Activation function not recognized.")
-        
+
         # Calculate feature map size
         self.calculate_feature_map_shape(self.input_shape)
-        
+
         # weight
-        self.filter = (
-            np.random.randn(self.num_filters, self.filter_size[0], self.filter_size[1])
-            * 0.1
+        self.filter = np.random.randn(
+            self.num_filters, self.filter_size[0], self.filter_size[1]
         )
 
-    def calculate_feature_map_shape(self, input_shape:tuple):
+    def calculate_feature_map_shape(self, input_shape: tuple):
         # berdasarkan rumus di ppt...i think
         height = input_shape[0]
         self.feature_map_v = (
             int((height - self.filter_size[0] + 2 * self.padding) / self.stride) + 1
         )
-        self.feature_map_shape = (self.feature_map_v, self.feature_map_v, self.num_filters)
+        self.feature_map_shape = (
+            self.feature_map_v,
+            self.feature_map_v,
+            self.num_filters,
+        )
         return self.feature_map_shape
 
     def get_image_channels(self, matrix: np.ndarray):

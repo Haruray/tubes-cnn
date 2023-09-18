@@ -2,6 +2,7 @@ import numpy as np
 from neuralnet.Layer import Layer
 from neuralnet.Activation import *
 
+
 class Dense(Layer):
     def __init__(self, num_units: int, input_len: int, detector_function: str):
         super().__init__()
@@ -21,16 +22,16 @@ class Dense(Layer):
             raise Exception("Activation function not recognized.")
 
         # weight
-        self.weights = (np.random.randn(self.num_units, input_len)*0.1)
+        self.weights = np.random.randn(self.num_units, input_len)
 
         # bias
-        self.biases = (np.zeros(num_units))
+        self.biases = np.zeros(num_units)
 
     def forward_propagate(self, input: np.ndarray):
-        input = input.flatten() # flatten input
-        output = np.dot(input, self.weights.T) + self.biases # forward propagate
-        output = self.detector_function.calculate(output) # activation 
+        input = input.flatten()  # flatten input
+        output = np.dot(input, self.weights.T) + self.biases  # forward propagate
+        output = self.detector_function.calculate(output)  # activation
         return output
-    
+
     def calculate_feature_map_shape(self, input: tuple):
         return self.feature_map_shape
