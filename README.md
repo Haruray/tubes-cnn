@@ -3,14 +3,17 @@
 ## Penjelasan input gambar
 Input gambar berupa matrix numpy dengan shape `(height, weight, channel)`. Namun, Convolution layer juga menangani bentuk numpy array `(height, weight)` saja, yang berarti juga menangani gambar grayscaled
 
-## To do list
-- Convolution Layer (almost done, kurang bias)
+## To do list (Bagian A)
+- Convolution Layer ✅
 - Detector ✅
 - Pooling ✅
-- Flatten Layer 
-- Dense Layer
-- Data preprocess untuk prediksi gambar
-- Proses Inference nya (Pembuatan Model)
+- Flatten Layer ✅
+- Dense Layer✅
+- Data preprocess untuk prediksi gambar✅
+- Proses Inference nya (Pembuatan Model)✅
+
+## To do list (Bagian B)
+- Derivative untuk masing-masing activation function
 
 ## Info
 kalau misal develop lewat VS Code dan dapet ini saat run pythonnya :
