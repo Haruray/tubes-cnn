@@ -8,7 +8,7 @@ class Activation:
     def calculate(self, input: np.ndarray):
         pass
 
-    def deriv(self, input: np.ndarray):
+    def deriv(self, input: np.ndarray, pred: np.ndarray = None):
         pass
 
 
@@ -19,6 +19,11 @@ class Relu(Activation):
 
     def calculate(self, input: np.ndarray):
         return np.maximum(input, np.zeros(input.shape))
+    def deriv(self, input : np.ndarray, pred : np.ndarray = None):
+        output = input.copy()
+        output[output < 0] = 0
+        output[output >= 0] = 1
+        return output
 
 
 class Sigmoid(Activation):
@@ -28,6 +33,8 @@ class Sigmoid(Activation):
 
     def calculate(self, input: np.ndarray):
         return 1 / (1 + np.exp(-input))
+    def deriv(self, input: np.ndarray, pred: np.ndarray = None):
+        return self.calculate(input) * (1 - self.calculate(input))
 
 
 class Softmax(Activation):
@@ -37,3 +44,7 @@ class Softmax(Activation):
 
     def calculate(self, input: np.ndarray):
         return np.exp(input) / np.sum(np.exp(input))
+    def deriv(self, input: np.ndarray, pred: np.ndarray = None):
+        copy = np.copy(pred)
+        copy[copy==input] = -(1 - copy[copy==input])
+        return copy
