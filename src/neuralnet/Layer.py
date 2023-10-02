@@ -8,7 +8,7 @@ class Layer:
     def forward_propagate(self, input: np.ndarray):
         pass
 
-    def backpropagate(self, out: np.ndarray):
+    def backpropagate(self, out: np.ndarray, learn_rate: float):
         pass
 
     def calculate_feature_map_shape(self, input: tuple):

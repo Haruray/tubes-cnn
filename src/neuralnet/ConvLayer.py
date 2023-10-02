@@ -41,6 +41,7 @@ class ConvLayer(Layer):
         self.filter = np.random.randn(
             self.num_filters, self.filter_size[0], self.filter_size[1]
         )
+        self.last_input = None
 
     def calculate_feature_map_shape(self, input_shape: tuple):
         # berdasarkan rumus di ppt...i think
@@ -100,6 +101,7 @@ class ConvLayer(Layer):
         return self.detector_function.calculate(matrix)
 
     def forward_propagate(self, input: np.ndarray):
+        self.last_input = input
         # input adalah matrix gambar
         # kita tambahkan padding pada matrix gambar
         og_height = input.shape[0]
@@ -114,7 +116,6 @@ class ConvLayer(Layer):
                 (og_height + self.padding, og_width + self.padding), refcheck=False
             )
         # modified height and width
-        height = input.shape[0]
         feature_map = np.zeros(self.feature_map_shape)
         input_channels = self.get_image_channels(input)
         for channel in input_channels:
@@ -128,3 +129,18 @@ class ConvLayer(Layer):
         feature_map = self.detector(feature_map)
 
         return feature_map
+
+    def backpropagate(self, din: np.ndarray, learn_rate: float):
+        dout = np.zeros(self.filter.shape)
+
+        input_channels = self.get_image_channels(self.last_input)
+        for channel in input_channels:
+            features = self.extract_features(channel, self.feature_map_shape)
+            for feat in features:
+                region, i, j = feat
+                for f in range(self.num_filters):
+                    dout[f] += din[i, j, f] * region
+
+        self.filter -= learn_rate * dout
+        return dout
+        
