@@ -13,3 +13,12 @@ class Layer:
 
     def calculate_feature_map_shape(self, input: tuple):
         pass
+
+    def __iter__(self):
+        pass
+
+    def __str__(self):
+        pass
+
+    def __repr__(self):
+        pass

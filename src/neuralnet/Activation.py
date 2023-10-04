@@ -1,4 +1,7 @@
 import numpy as np
+import json
+
+from neuralnet.Encoder import MyEncoder
 
 
 class Activation:
@@ -10,6 +13,17 @@ class Activation:
 
     def deriv(self, input: np.ndarray, pred: np.ndarray = None):
         pass
+    
+    def __iter__(self):
+        yield from {
+            "name": self.name
+        }.items()
+
+    def __str__(self):
+        return json.dumps(dict(self), cls=MyEncoder, ensure_ascii=False)
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class Relu(Activation):

@@ -43,6 +43,24 @@ class ConvLayer(Layer):
         )
         self.last_input = None
 
+    def __iter__(self):
+        yield from {
+            "type": self.type,
+            "input_shape": self.input_shape,
+            "padding": self.padding,
+            "num_filters": self.num_filters,
+            "filter_size": self.filter_size,
+            "stride": self.stride,
+            "detector_function": self.detector_function,
+            "filter": self.filter.tolist(),
+        }.items()
+
+    def __str__(self):
+        return json.dumps(dict(self), cls=MyEncoder, ensure_ascii=False)
+
+    def __repr__(self):
+        return self.__str__()
+
     def calculate_feature_map_shape(self, input_shape: tuple):
         # berdasarkan rumus di ppt...i think
         height = input_shape[0]
