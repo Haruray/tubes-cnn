@@ -26,17 +26,6 @@ class NN:
             # print(image.shape)
         return image
     
-    # def __iter__(self):
-    #     yield from {
-    #         "input_shape": self.input_shape,
-    #         "layers": self.layers.__repr__,
-    #     }.items()
-
-    # def __str__(self):
-    #     return json.dumps(self, cls=MyEncoder, ensure_ascii=False)
-
-    # def __repr__(self):
-    #     return self.__str__()
     
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, 
@@ -48,7 +37,6 @@ class NN:
             ind+= " "
         print(ind)
         print(self.input_shape.__class__)
-        # save_string = json.dumps({"input_shape": self.input_shape, "layers": self.layers}, cls=MyEncoder, indent=indent, ensure_ascii=False)
         with open(filename, 'w') as f:
             f.write("{\n")
             f.write(f'''{ind}"input_shape": {list(self.input_shape)},\n''')
@@ -61,9 +49,3 @@ class NN:
                     f.write(',\n')
             f.write(f'''{ind}]\n''')
             f.write("}\n")
-
-    # def load_model(self, filename):
-    #     # Opening JSON file
-    #     f = open('filename', "r")
-        
-    #     data = json.load(f)

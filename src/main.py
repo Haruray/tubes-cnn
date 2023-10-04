@@ -87,3 +87,27 @@ else:
     category = "Panda"
 
 print(category)
+
+
+# model = NN(image.shape)
+# model.add(
+#     ConvLayer(
+#         input_shape=image.shape,
+#         padding=0,
+#         num_filters=1,
+#         filter_size=(3, 3),
+#         stride=2,
+#         detector_function="relu",
+#     )
+# )
+# model.add(Pooling(mode="max", pool_size=(2, 2), stride=2))
+# model.add(Flatten())
+
+# flat_shape = model.layers[2].feature_map_shape
+# model.add(Dense(1024, flat_shape, "relu"))
+
+# model.add(Dense(64, 1024, "relu"))
+
+# flat_shape = model.layers[4].feature_map_shape
+# model.add(Dense(1, 64, "sigmoid"))
+# model.save_model("")
