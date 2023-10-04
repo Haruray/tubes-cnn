@@ -1,4 +1,6 @@
+import json
 import numpy as np
+from neuralnet.Encoder import MyEncoder
 from neuralnet.Layer import Layer
 
 
@@ -7,6 +9,17 @@ class Flatten(Layer):
         super().__init__()
         self.type = "flatten"
         self.feature_map_shape = None
+
+    def __iter__(self):
+        yield from {
+            "type": self.type,
+        }.items()
+
+    def __str__(self):
+        return json.dumps(dict(self), cls=MyEncoder, ensure_ascii=False)
+
+    def __repr__(self):
+        return self.__str__()
 
     def forward_propagate(self, input: np.ndarray):
         # Flatten input: membuat input menjadi array satu dimensi

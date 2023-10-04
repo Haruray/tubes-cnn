@@ -1,3 +1,5 @@
+import json
+from neuralnet.Encoder import MyEncoder
 from neuralnet.Layer import Layer
 import numpy as np
 
@@ -14,6 +16,20 @@ class Pooling(Layer):
         self.pool_size = pool_size
         self.stride = stride
         self.feature_map_shape = None
+        
+    def __iter__(self):
+        yield from {
+            "type": self.type,
+            "stride": self.stride,
+            "mode": self.mode,
+            "pool_size": self.pool_size,
+        }.items()
+
+    def __str__(self):
+        return json.dumps(dict(self), cls=MyEncoder, ensure_ascii=False)
+
+    def __repr__(self):
+        return self.__str__()
 
     def calculate_feature_map_shape(self, input_shape: tuple):
         # input adalah feature map hasil conv layer

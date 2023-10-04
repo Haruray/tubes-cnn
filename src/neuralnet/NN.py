@@ -1,9 +1,12 @@
 from neuralnet import Layer
 import numpy as np
+import json
+
+from neuralnet.Encoder import MyEncoder
 
 
 class NN:
-    def __init__(self, input_shape: tuple, layers=[]):
+    def __init__(self, input_shape: tuple, layers:Layer=[]):
         self.input_shape = input_shape
         self.layers = layers
 
@@ -22,3 +25,27 @@ class NN:
             image = layer.forward_propagate(image)
             # print(image.shape)
         return image
+    
+    
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=4)
+
+    def save_model(self, filename, indent):
+        ind = ""
+        for i in range(indent):
+            ind+= " "
+        print(ind)
+        print(self.input_shape.__class__)
+        with open(filename, 'w') as f:
+            f.write("{\n")
+            f.write(f'''{ind}"input_shape": {list(self.input_shape)},\n''')
+            f.write(f'''{ind}"layers": [\n''')
+            for i in range(len(self.layers)):
+                f.write(f'''{ind}{ind}{self.layers[i]}''')
+                if(i== len(self.layers)-1):
+                    f.write('\n')
+                else:
+                    f.write(',\n')
+            f.write(f'''{ind}]\n''')
+            f.write("}\n")

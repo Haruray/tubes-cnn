@@ -26,6 +26,21 @@ class Dense(Layer):
 
         # bias
         self.biases = np.zeros(num_units)
+        
+    def __iter__(self):
+        yield from {
+            "type": self.type,
+            "num_units": self.num_units,
+            "detector_function": self.detector_function,
+            "weights": self.weights.tolist(),
+            "biases": self.biases.tolist(),
+        }.items()
+
+    def __str__(self):
+        return json.dumps(dict(self), cls=MyEncoder, ensure_ascii=False)
+
+    def __repr__(self):
+        return self.__str__()
 
     def forward_propagate(self, input: np.ndarray):
         input = input.flatten()  # flatten input
