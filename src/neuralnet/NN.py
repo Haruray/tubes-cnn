@@ -21,13 +21,15 @@ class NN:
 
     def forward_propagate(self, image: np.ndarray):
         # image = preprocess_image(image)
+        prev_layer = None
         for layer in self.layers:
             image = layer.forward_propagate(image)
-            # print(image.shape)
+            layer.last_layer = prev_layer
+            prev_layer = layer
         return image
 
     def calculate_derr_error(self, layer: Layer, preds: np.ndarray, labels: np.ndarray):
-        # source : https://www.pinecone.io/learn/cross-entropy-loss/ 
+        # source : https://www.pinecone.io/learn/cross-entropy-loss/
         if len(preds) != len(labels):
             raise Exception(
                 f"The label: {len(labels)} and prediction: {len(preds)} does not have same length"
@@ -39,15 +41,17 @@ class NN:
         if layers_count <= 0:
             raise Exception("There is no layers to backpropagate")
         result = self.forward_propagate(input)
-        prev_layer = self.layers[layers_count - 1] # final layer
+        prev_layer = self.layers[layers_count - 1]  # final layer
         last_deriv = None
         for i in range(layers_count - 1, 0, -1):
             layer = self.layers[i]
 
             # CASE OUTPUT LAYER (OBVIOUSLY DENSE LAYER)
             if i == layers_count - 1:
-                last_deriv = self.calculate_derr_error(prev_layer, result, label).T # dE/dNet
-                layer.backpropagate(last_deriv, learning_rate) # dE/dNet * dNet/dW
+                last_deriv = self.calculate_derr_error(
+                    prev_layer, result, label
+                ).T  # dE/dNet
+                layer.backpropagate(last_deriv, learning_rate)  # dE/dNet * dNet/dW
 
             # CASE HIDDEN LAYER
             else:
@@ -56,12 +60,12 @@ class NN:
                     """
                     Rumus general
                     misal current layer adalah i, dan last layer adalah j dan k adalah layer setelah i
-                    maka backprop layer i adalah : 
+                    maka backprop layer i adalah :
                     dE/dWi = dE/dNetj * dNetj/dActivation * dActivation/dNeti * dNeti/dWi
                     dNetj/dActivation = Wj, dan dE/dNetj * Wj = dE/dActivation
                     Sehingga, dE/dActivation * dActivation/dNeti = dE/dNeti
 
-                    Maka bisa disimpulkan bahwa rumus sederhananya : 
+                    Maka bisa disimpulkan bahwa rumus sederhananya :
                     dE/dWi = dE/dNetj * Wj * Netk
 
                     dE/dNetj = last_deriv --> sudah diketahui
@@ -69,11 +73,7 @@ class NN:
                     Netk = layer.last_input --> sudah diketahui
 
                     """
-                    print(layer.weights.shape)
-                    last_deriv = (
-                        last_deriv * prev_layer.weights
-                    ).T
-                    # print(last_deriv.shape)
+                    last_deriv = (last_deriv * prev_layer.weights).T
                     layer.backpropagate(last_deriv, learning_rate)
                 else:
                     print("yeah")

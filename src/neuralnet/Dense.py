@@ -11,6 +11,7 @@ class Dense(Layer):
         self.num_units = num_units
         self.feature_map_shape = num_units
         self.last_input = None
+        self.last_layer = None
 
         # detector function
         if detector_function == "relu":
@@ -61,6 +62,8 @@ class Dense(Layer):
         net = input dari layer sebelumnya * current Weight + bias
         dNet/dW berarti input dari layer sebelumnya
         """
-        dout = out * self.last_input #dNet/dW * dE/dNet
-        self.weights -= learn_rate * dout
+        dout = 0
+        if (self.last_layer.type != "flatten"):
+            dout = out * self.last_input #dNet/dW * dE/dNet
+            self.weights -= learn_rate * dout
         return dout
