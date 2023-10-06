@@ -26,6 +26,15 @@ class NN:
             # print(image.shape)
         return image
     
+    def back_propagate(self, input, label, learning_rate):
+        layers_count = len(self.layers)
+        if(layers_count <= 0):
+            raise Exception("There is no layers to backpropagate")
+        prev_layer = self.layers[layers_count-1]
+        last_deriv = prev_layer.detector_function.deriv(prev_layer.last_input, label)
+        for i in range(layers_count-1, 0, -1):
+            print("yeah")
+    
     
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, 

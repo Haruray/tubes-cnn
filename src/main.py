@@ -88,6 +88,8 @@ else:
 
 print(category)
 
+print(newModel.layers[5].weights.shape)
+
 
 # model = NN(image.shape)
 # model.add(
