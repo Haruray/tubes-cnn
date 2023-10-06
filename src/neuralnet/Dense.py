@@ -54,6 +54,9 @@ class Dense(Layer):
         return self.feature_map_shape
     
     def backpropagate(self, out: np.ndarray, learn_rate: float):
-        dout = np.dot(out, self.last_input)
-        self.biases -= learn_rate * dout
+        # print(out.shape)
+        # print(self.last_input.shape)
+        dout =  out * self.last_input
+        # print(dout.shape)
+        self.weights -= learn_rate * dout
         return dout
