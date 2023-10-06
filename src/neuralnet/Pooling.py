@@ -16,6 +16,7 @@ class Pooling(Layer):
         self.pool_size = pool_size
         self.stride = stride
         self.feature_map_shape = None
+        self.last_input = None
         
     def __iter__(self):
         yield from {
@@ -90,4 +91,5 @@ class Pooling(Layer):
                     feature_map[i, j] = np.max(region)
                 elif self.mode == "avg":
                     feature_map[i, j] = np.average(region)
+        self.last_input = input
         return feature_map

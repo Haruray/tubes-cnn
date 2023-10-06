@@ -119,7 +119,6 @@ class ConvLayer(Layer):
         return self.detector_function.calculate(matrix)
 
     def forward_propagate(self, input: np.ndarray):
-        self.last_input = input
         # input adalah matrix gambar
         # kita tambahkan padding pada matrix gambar
         og_height = input.shape[0]
@@ -145,7 +144,7 @@ class ConvLayer(Layer):
                     feature_map[i, j] += np.sum(region * self.filter)
 
         feature_map = self.detector(feature_map)
-
+        self.last_input = input
         return feature_map
 
     def backpropagate(self, din: np.ndarray, learn_rate: float):
