@@ -80,6 +80,7 @@ class Pooling(Layer):
         return features
 
     def forward_propagate(self, input: np.ndarray):
+        self.last_input = input
         feature_map = np.zeros(self.feature_map_shape)
         input_channels = self.get_image_channels(input)
         for channel in input_channels:
@@ -91,5 +92,36 @@ class Pooling(Layer):
                     feature_map[i, j] = np.max(region)
                 elif self.mode == "avg":
                     feature_map[i, j] = np.average(region)
-        self.last_input = input
         return feature_map
+    
+    def backpropagate(self, din: np.ndarray, learn_rate: float):
+        # gradients are passed through the indices of greatest
+        # value in the original pooling during the forward step
+        
+        k_h, k_w = self.pool_size
+        _, h_new, w_new = din.shape
+        num_channels, _, _ = self.last_input.shape
+        s_h = s_w = self.stride
+
+        dout = np.zeros_like(self.last_input)
+
+        for channel in range(num_channels):
+            for h in range(h_new):
+                for w in range(w_new):
+                        if self.mode == 'max':
+                            tmp = self.last_input[channel, h*s_h:k_h+(h*s_h),
+                                            w*s_w:k_w+(w*s_w)]
+                            print(tmp)
+                            mask = (tmp == np.max(tmp))
+                            dout[channel,
+                                h*(s_h):(h*(s_h))+k_h,
+                                w*(s_w):(w*(s_w))+k_w] += din[channel, h, w] * mask
+                            
+                        if self.mode == 'avg':
+                            dout =dout.astype(np.float64)
+                            dout[channel,
+                                h*(s_h):(h*(s_h))+k_h,
+                                w*(s_w):(w*(s_w))+k_w] = dout[channel,
+                                h*(s_h):(h*(s_h))+k_h,
+                                w*(s_w):(w*(s_w))+k_w] + (din[channel, h, w])/k_h/k_w
+        return dout
