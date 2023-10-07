@@ -4,6 +4,8 @@ import numpy as np
 class Layer:
     def __init__(self):
         self.type = ""
+        self.last_input = None
+        self.last_layer = None
 
     def forward_propagate(self, input: np.ndarray):
         pass

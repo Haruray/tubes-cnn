@@ -9,7 +9,6 @@ class Flatten(Layer):
         super().__init__()
         self.type = "flatten"
         self.feature_map_shape = None
-        self.last_input = None
 
     def __iter__(self):
         yield from {
@@ -24,10 +23,10 @@ class Flatten(Layer):
 
     def forward_propagate(self, input: np.ndarray):
         # Flatten input: membuat input menjadi array satu dimensi
-        output = input.flatten()
         self.last_input = input
+        output = input.flatten()
         return output
-
+    
     def calculate_feature_map_shape(self, input: tuple):
         flat_dim = 1
         for dim in input:

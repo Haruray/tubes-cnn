@@ -43,14 +43,15 @@ class NN:
         result = self.forward_propagate(input)
         prev_layer = self.layers[layers_count - 1]  # final layer
         last_deriv = None
-        for i in range(layers_count - 1, 0, -1):
+        for i in range(layers_count - 1, -1, -1):
             layer = self.layers[i]
-
             # CASE OUTPUT LAYER (OBVIOUSLY DENSE LAYER)
             if i == layers_count - 1:
+                layer.last_input = np.expand_dims(layer.last_input, axis=1).T
                 last_deriv = self.calculate_derr_error(
                     prev_layer, result, label
-                ).T  # dE/dNet
+                )  # dE/dNet
+                last_deriv = np.expand_dims(last_deriv, axis=1)
                 layer.backpropagate(last_deriv, learning_rate)  # dE/dNet * dNet/dW
 
             # CASE HIDDEN LAYER
@@ -62,21 +63,32 @@ class NN:
                     misal current layer adalah i, dan last layer adalah j dan k adalah layer setelah i
                     maka backprop layer i adalah :
                     dE/dWi = dE/dNetj * dNetj/dActivation * dActivation/dNeti * dNeti/dWi
-                    dNetj/dActivation = Wj, dan dE/dNetj * Wj = dE/dActivation
-                    Sehingga, dE/dActivation * dActivation/dNeti = dE/dNeti
 
                     Maka bisa disimpulkan bahwa rumus sederhananya :
-                    dE/dWi = dE/dNetj * Wj * Netk
+                    dE/dWi = dE/dNetj * Wj * derivActivationFunc(Netj) * Netk
 
                     dE/dNetj = last_deriv --> sudah diketahui
                     Wj = prev_layer.weights --> sudah diketahui
                     Netk = layer.last_input --> sudah diketahui
+                    derivActivationFunc(Netj) = layer.detector_function.deriv(prev_layer.last_input) --> sudah diketahui
 
                     """
-                    last_deriv = (last_deriv * prev_layer.weights).T
+                    layer.last_input = np.expand_dims(layer.last_input, axis=1).T
+                    print("tes : ", layer.type)
+                    print("+ prev layer weights",prev_layer.weights.shape)
+                    print("curr layer weight", layer.weights.shape)
+                    print("last input",layer.last_input.shape)
+                    print("prev layer last input", prev_layer.last_input.shape)
+                    print("+ last deriv",last_deriv.shape)
+                    print("+ deriv func",layer.detector_function.deriv(prev_layer.last_input).shape)
+                    last_deriv = np.dot(last_deriv, prev_layer.weights)
+                    print("+ after",last_deriv.shape)
+                    # last_deriv = (last_deriv * layer.detector_function.deriv(layer.last_input * layer.weights)).T
+                    last_deriv = last_deriv * layer.detector_function.deriv(prev_layer.last_input)
+                    print("+ last deriv aaaaa", last_deriv.shape)
                     layer.backpropagate(last_deriv, learning_rate)
                 else:
-                    print("yeah")
+                    layer.backpropagate(last_deriv, learning_rate)
             prev_layer = layer
 
     def toJSON(self):

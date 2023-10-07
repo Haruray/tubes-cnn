@@ -78,7 +78,7 @@ def load_model(filename):
 
 
 # Build the model
-newModel = load_model("yeah.json")
+newModel = load_model("yeah2.json")
 
 result = newModel.forward_propagate(image)
 
@@ -114,8 +114,10 @@ trainer.fit()
 # flat_shape = model.layers[2].feature_map_shape
 # model.add(Dense(1024, flat_shape, "relu"))
 
-# model.add(Dense(64, 1024, "relu"))
+# model.add(Dense(128, 1024, "relu"))
+
+# model.add(Dense(64, 128, "relu"))
 
 # flat_shape = model.layers[4].feature_map_shape
 # model.add(Dense(1, 64, "sigmoid"))
-# model.save_model("yeah.json", 4)
+# model.save_model("yeah2.json", 4)
