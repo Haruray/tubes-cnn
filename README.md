@@ -13,14 +13,14 @@ Input gambar berupa matrix numpy dengan shape `(height, weight, channel)`. Namun
 - Proses Inference nya (Pembuatan Model)✅
 
 ## To do list (Bagian B)
-- Derivative untuk masing-masing activation function
-- Backprop Convolution layer
-- Backprop Pooling
-- Backprop Dense layer
-- (terinspirasi dari pytorch) membuat class Trainer yang bisa atur parameter epoch, learning rate, dkk dan memulai training
-- Pembuatan evaluation (accuracy, recall, dkk) dan dibuat dalam confusion matrix
-- Print deskripsi model, save model, dan load model
-- Ngelakuin proses training dan eksperimen
+- Derivative untuk masing-masing activation function ✅
+- Backprop Convolution layer ✅
+- Backprop Pooling ✅
+- Backprop Dense layer ✅
+- (terinspirasi dari pytorch) membuat class Trainer yang bisa atur parameter epoch, learning rate, dkk dan memulai training ✅
+- Pembuatan evaluation (accuracy, recall, dkk) dan dibuat dalam confusion matrix ✅
+- Print deskripsi model, save model, dan load model ✅
+- Ngelakuin proses training dan eksperimen ✅
 
 ## Info
 kalau misal develop lewat VS Code dan dapet ini saat run pythonnya :
