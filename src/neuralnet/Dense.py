@@ -62,8 +62,5 @@ class Dense(Layer):
         """
 
         dout = out.T * self.last_input  # dNet/dW * dE/dNet
-        print("================")
-        print(out.shape, self.last_input.shape, dout.shape)
-        print(self.weights.shape)
-        print("================")
         self.weights -= learn_rate * dout
+        return dout

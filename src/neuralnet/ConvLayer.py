@@ -160,4 +160,3 @@ class ConvLayer(Layer):
 
         self.filter -= learn_rate * dout
         return dout
-        
