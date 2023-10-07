@@ -22,6 +22,7 @@ class Evaluator:
         total_predictions = np.sum(self.conf_matrix)
         accuracy = correct_predictions / total_predictions
         print(f"Accuracy: {accuracy * 100:.2f}%")
+        return accuracy
 
     def recall(self):
         for i in range(self.num_classes):
@@ -42,6 +43,7 @@ class Evaluator:
             #     print(f"Class {class_idx}: {class_recall:.2f}")
 
         print(f"Average Recall: {average_recall:.2f}%")
+        return average_recall
 
     def precision(self):
         for i in range(self.num_classes):
@@ -56,6 +58,7 @@ class Evaluator:
 
         average_precision = np.mean(self.precision_mat)
         print(f"Average Precision: {average_precision:.2f}%")
+        return average_precision
 
     def f1score(self):
         f1score_mat = np.zeros(self.num_classes)
@@ -72,6 +75,7 @@ class Evaluator:
 
         average_f1score = np.mean(f1score_mat)
         print(f"Average F1 Score: {average_f1score:.2f}%")
+        return average_f1score
 
 
 # eval = Evaluator(3, [0,2,1,2], [1,2,0,2])
