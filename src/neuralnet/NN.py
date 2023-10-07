@@ -1,7 +1,6 @@
 from neuralnet import Layer
 import numpy as np
 import json
-import warnings
 
 
 class NN:
@@ -55,7 +54,6 @@ class NN:
         return preds - labels
 
     def backpropagate(self, input, label, learning_rate):
-        # warnings.filterwarnings("ignore")
 
         layers_count = len(self.layers)
         if layers_count <= 0:

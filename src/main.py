@@ -8,22 +8,22 @@ import numpy as np
 from neuralnet import Trainer
 from neuralnet import Preprocess
 
-data_preprocess = Preprocess("data", False)
+data_preprocess = Preprocess("../data", False)
 train, test = data_preprocess.get_data(shuffle=True)
 
 # Build the model
-newModel = load_model("small.json")
+newModel = load_model("yeah.json")
 
 trainer = Trainer(
     newModel,
     1,
     0.1,
-    train.get_images()[:10],
-    train.get_labels()[:10],
-    test_input=test.get_images()[:10],
-    test_label=test.get_labels()[:10],
+    train.get_images(),
+    train.get_labels(),
+    test_input=test.get_images(),
+    test_label=test.get_labels(),
 )
-trainer.fit()
+# trainer.fit()
 # print(newModel.layers[4].weights)
 
 # image = cv2.imread("251.jpeg")

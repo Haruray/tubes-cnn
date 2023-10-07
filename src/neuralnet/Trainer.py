@@ -3,7 +3,16 @@ from neuralnet.Evaluator import Evaluator
 
 
 class Trainer:
-    def __init__(self, model: NN, epoch: int, learning_rate: float, input, label, test_input, test_label):
+    def __init__(
+        self,
+        model: NN,
+        epoch: int,
+        learning_rate: float,
+        input,
+        label,
+        test_input,
+        test_label,
+    ):
         self.model = model
         self.epoch = epoch
         self.learning_rate = learning_rate
@@ -26,3 +35,4 @@ class Trainer:
             eval.precision()
             eval.recall()
             eval.f1score()
+        self.model.save_model("trained.json", 4)
