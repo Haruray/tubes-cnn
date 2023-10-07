@@ -77,8 +77,7 @@ class Preprocess:
         fold_size = int(len(train_test_combined.data) / self.k)
         for i in range(self.k):
             fold = ImageDataset()
-            for j in range(fold_size):
-                fold.data.append(train_test_combined.data[i * fold_size + j])
+            fold.data = train_test_combined.data[i * fold_size : (i + 1) * fold_size]
             data_split.append(fold)
         return data_split
 

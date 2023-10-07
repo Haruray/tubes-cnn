@@ -23,7 +23,7 @@ trainer = Trainer(
     test_input=test.get_images()[:5],
     test_label=test.get_labels()[:5],
 )
-trainer.fit(save=True)
+trainer.fit(save=False)
 # print(newModel.layers[4].weights)
 
 # image = cv2.imread("251.jpeg")

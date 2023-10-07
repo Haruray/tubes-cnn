@@ -4,6 +4,6 @@ from neuralnet.Dense import Dense
 from neuralnet.Flatten import Flatten
 from neuralnet.Pooling import Pooling
 from neuralnet.NN import NN
-from neuralnet.Preprocess import Preprocess
+from neuralnet.Preprocess import *
 from neuralnet.Trainer import Trainer
 from neuralnet.load_model import load_model
