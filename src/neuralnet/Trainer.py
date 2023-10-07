@@ -21,7 +21,7 @@ class Trainer:
         if len(input) != len(label):
             raise Exception("the input length does not compatible with the label")
 
-    def fit(self):
+    def fit(self, save=False):
         print("Training model...")
         for epoch in range(self.epoch):
             print(f"Epoch {epoch+1}/{self.epoch}")
@@ -35,5 +35,8 @@ class Trainer:
             eval.precision()
             eval.recall()
             eval.f1score()
-        print("Training finished. Saving model...")
-        self.model.save_model("trained.json", 4)
+        print("Training finished.")
+        if save:
+            print("Saving model...")
+            self.model.save_model("trained.json", 4)
+        return eval
