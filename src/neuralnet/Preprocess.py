@@ -83,7 +83,7 @@ class Preprocess:
         return data_split
 
     def get_data_split(self, max_data_len=None, split: tuple = (0.9, 0.1)):
-        train, test = self.get_data_normal()
+        train, test = self.get_data_normal(shuffle=True)
         train_test_combined = ImageDataset(train.data + test.data)
         if max_data_len != None:
             train_test_combined.data = train_test_combined.data[:max_data_len]

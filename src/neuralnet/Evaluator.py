@@ -27,9 +27,12 @@ class Evaluator:
         for i in range(self.num_classes):
             true_positives = self.conf_matrix[i, i]
             false_negatives = np.sum(self.conf_matrix[i, :]) - true_positives
-            self.recall_mat[i] = (
-                true_positives / (true_positives + false_negatives) * 100
-            )
+            if (true_positives + false_negatives) == 0:
+                self.recall_mat[i] = 0
+            else:
+                self.recall_mat[i] = (
+                    true_positives / (true_positives + false_negatives) * 100
+                )
 
             # Calculate the average self.recall
             average_recall = np.mean(self.recall_mat)
