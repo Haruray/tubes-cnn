@@ -62,5 +62,7 @@ class Dense(Layer):
         """
 
         dout = out.T * self.last_input  # dNet/dW * dE/dNet
+        dout_bias = np.sum(out.T, axis=1).reshape(self.biases.shape)
         self.weights -= learn_rate * dout
+        self.biases -= learn_rate * dout_bias
         return dout
