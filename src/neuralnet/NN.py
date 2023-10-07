@@ -1,6 +1,7 @@
 from neuralnet import Layer
 import numpy as np
 import json
+import warnings
 
 
 class NN:
@@ -26,6 +27,25 @@ class NN:
             prev_layer = layer
         return image
 
+    def predict(self, images: np.ndarray):
+        if len(images.shape) == 3:
+            return self.forward_propagate(images)
+        elif len(images.shape) == 4:
+            result = []
+            for image in images:
+                result.append(self.forward_propagate(image))
+            result = list(np.array(result).flatten())
+            result = map(self.output_to_label, result)
+            return list(result)
+        else:
+            raise Exception("The image shape is not valid")
+
+    def output_to_label(self, output):
+        if output > 0.5:
+            return 1
+        else:
+            return 0
+
     def calculate_derr_error(self, layer: Layer, preds: np.ndarray, labels: np.ndarray):
         # source : https://www.pinecone.io/learn/cross-entropy-loss/
         if len(preds) != len(labels):
@@ -35,6 +55,8 @@ class NN:
         return preds - labels
 
     def backpropagate(self, input, label, learning_rate):
+        # warnings.filterwarnings("ignore")
+
         layers_count = len(self.layers)
         if layers_count <= 0:
             raise Exception("There is no layers to backpropagate")
