@@ -7,6 +7,7 @@ import numpy as np
 import json
 
 from neuralnet.Encoder import MyEncoder
+from neuralnet.Trainer import Trainer
 
 image = cv2.imread("251.jpeg")
 
@@ -77,7 +78,7 @@ def load_model(filename):
 
 
 # Build the model
-newModel = load_model("yeah.json")
+newModel = load_model("yeah2.json")
 
 result = newModel.forward_propagate(image)
 
@@ -86,9 +87,14 @@ if result <= 0.5:
 else:
     category = "Panda"
 
-print(category)
+# print(category)
 
-print(newModel.layers[5].weights.shape)
+# print(newModel.layers[5].weights.shape)
+
+# print(newModel.layers[4].weights)
+trainer = Trainer(newModel, 1, 0.1, np.array([image]), np.array([[0]]))
+trainer.fit()
+# print(newModel.layers[4].weights)
 
 
 # model = NN(image.shape)
@@ -108,8 +114,10 @@ print(newModel.layers[5].weights.shape)
 # flat_shape = model.layers[2].feature_map_shape
 # model.add(Dense(1024, flat_shape, "relu"))
 
-# model.add(Dense(64, 1024, "relu"))
+# model.add(Dense(128, 1024, "relu"))
+
+# model.add(Dense(64, 128, "relu"))
 
 # flat_shape = model.layers[4].feature_map_shape
 # model.add(Dense(1, 64, "sigmoid"))
-# model.save_model("")
+# model.save_model("yeah2.json", 4)

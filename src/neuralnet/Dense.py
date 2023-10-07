@@ -10,7 +10,6 @@ class Dense(Layer):
         self.type = "dense"
         self.num_units = num_units
         self.feature_map_shape = num_units
-        self.last_input = None
 
         # detector function
         if detector_function == "relu":
@@ -27,7 +26,7 @@ class Dense(Layer):
 
         # bias
         self.biases = np.zeros(num_units)
-        
+
     def __iter__(self):
         yield from {
             "type": self.type,
@@ -52,8 +51,16 @@ class Dense(Layer):
 
     def calculate_feature_map_shape(self, input: tuple):
         return self.feature_map_shape
-    
+
     def backpropagate(self, out: np.ndarray, learn_rate: float):
-        dout = np.dot(out, self.last_input)
-        self.biases -= learn_rate * dout
+        """
+        weight = weight - learning_rate * dE/dNet * dNet/dW
+        dE/dNet adalah out
+        cari dNet/dW
+        net = input dari layer sebelumnya * current Weight + bias
+        dNet/dW berarti input dari layer sebelumnya
+        """
+
+        dout = out.T * self.last_input  # dNet/dW * dE/dNet
+        self.weights -= learn_rate * dout
         return dout

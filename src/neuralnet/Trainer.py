@@ -3,7 +3,6 @@ from neuralnet import NN
 
 class Trainer:
     def __init__(self, model:NN, epoch: int, learning_rate: float, input, label):
-        super().__init__()
         self.model = model
         self.epoch = epoch
         self.learning_rate = learning_rate

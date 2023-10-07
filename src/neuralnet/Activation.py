@@ -48,6 +48,10 @@ class Sigmoid(Activation):
     def calculate(self, input: np.ndarray):
         return 1 / (1 + np.exp(-input))
     def deriv(self, input: np.ndarray, pred: np.ndarray = None):
+        # print(input)
+        # print(pred)
+        # print(self.calculate(input))
+        # print(self.calculate(input) * (1 - self.calculate(input)))
         return self.calculate(input) * (1 - self.calculate(input))
 
 

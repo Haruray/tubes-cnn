@@ -40,7 +40,6 @@ class Pooling(Layer):
         feature_map_v = int((height - self.pool_size[0]) / self.stride) + 1
         self.feature_map_shape = (feature_map_v, feature_map_v, num_filters)
         return self.feature_map_shape
-
     def get_image_channels(self, matrix: np.ndarray):
         channels = []
         if len(matrix.shape) == 3:
@@ -99,8 +98,8 @@ class Pooling(Layer):
         # value in the original pooling during the forward step
         
         k_h, k_w = self.pool_size
-        _, h_new, w_new = din.shape
-        num_channels, _, _ = self.last_input.shape
+        h_new, w_new, _ = din.shape
+        _, _, num_channels = self.last_input.shape
         s_h = s_w = self.stride
 
         dout = np.zeros_like(self.last_input)
@@ -109,19 +108,18 @@ class Pooling(Layer):
             for h in range(h_new):
                 for w in range(w_new):
                         if self.mode == 'max':
-                            tmp = self.last_input[channel, h*s_h:k_h+(h*s_h),
-                                            w*s_w:k_w+(w*s_w)]
-                            print(tmp)
+                            tmp = self.last_input[h*s_h:k_h+(h*s_h),
+                                            w*s_w:k_w+(w*s_w), channel]
                             mask = (tmp == np.max(tmp))
-                            dout[channel,
+                            dout[
                                 h*(s_h):(h*(s_h))+k_h,
-                                w*(s_w):(w*(s_w))+k_w] += din[channel, h, w] * mask
+                                w*(s_w):(w*(s_w))+k_w, channel] += din[h, w, channel] * mask
                             
                         if self.mode == 'avg':
                             dout =dout.astype(np.float64)
-                            dout[channel,
+                            dout[
                                 h*(s_h):(h*(s_h))+k_h,
-                                w*(s_w):(w*(s_w))+k_w] = dout[channel,
+                                w*(s_w):(w*(s_w))+k_w, channel] = dout[
                                 h*(s_h):(h*(s_h))+k_h,
-                                w*(s_w):(w*(s_w))+k_w] + (din[channel, h, w])/k_h/k_w
+                                w*(s_w):(w*(s_w))+k_w, channel] + (din[h, w, channel])/k_h/k_w
         return dout
