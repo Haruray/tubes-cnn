@@ -60,8 +60,8 @@ class Dense(Layer):
         net = input dari layer sebelumnya * current Weight + bias
         dNet/dW berarti input dari layer sebelumnya
         """
-        
-        dout = out.T * self.last_input #dNet/dW * dE/dNet
+
+        dout = out.T * self.last_input  # dNet/dW * dE/dNet
         print("================")
         print(out.shape, self.last_input.shape, dout.shape)
         print(self.weights.shape)

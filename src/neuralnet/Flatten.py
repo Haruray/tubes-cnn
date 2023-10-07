@@ -26,7 +26,8 @@ class Flatten(Layer):
         self.last_input = input
         output = input.flatten()
         return output
-    
+    def backpropagate(self, out: np.ndarray, learn_rate: float):
+        return out.reshape(self.last_input.shape)
     def calculate_feature_map_shape(self, input: tuple):
         flat_dim = 1
         for dim in input:

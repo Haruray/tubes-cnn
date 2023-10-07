@@ -75,20 +75,29 @@ class NN:
                     """
                     layer.last_input = np.expand_dims(layer.last_input, axis=1).T
                     print("tes : ", layer.type)
-                    print("+ prev layer weights",prev_layer.weights.shape)
+                    print("+ prev layer weights", prev_layer.weights.shape)
                     print("curr layer weight", layer.weights.shape)
-                    print("last input",layer.last_input.shape)
+                    print("last input", layer.last_input.shape)
                     print("prev layer last input", prev_layer.last_input.shape)
-                    print("+ last deriv",last_deriv.shape)
-                    print("+ deriv func",layer.detector_function.deriv(prev_layer.last_input).shape)
+                    print("+ last deriv", last_deriv.shape)
+                    print(
+                        "+ deriv func",
+                        layer.detector_function.deriv(prev_layer.last_input).shape,
+                    )
                     last_deriv = np.dot(last_deriv, prev_layer.weights)
-                    print("+ after",last_deriv.shape)
+                    print("+ after", last_deriv.shape)
                     # last_deriv = (last_deriv * layer.detector_function.deriv(layer.last_input * layer.weights)).T
-                    last_deriv = last_deriv * layer.detector_function.deriv(prev_layer.last_input)
+                    last_deriv = last_deriv * layer.detector_function.deriv(
+                        prev_layer.last_input
+                    )
                     print("+ last deriv aaaaa", last_deriv.shape)
                     layer.backpropagate(last_deriv, learning_rate)
+                elif layer.type == "flatten":
+                    #mengubah bentuk flatten ke bentuk sebelumnya, yaitu last_input
+                    last_deriv = np.dot(last_deriv, prev_layer.weights)
+                    last_deriv = layer.backpropagate(last_deriv, learning_rate).shape
                 else:
-                    layer.backpropagate(last_deriv, learning_rate)
+                    pass
             prev_layer = layer
 
     def toJSON(self):
