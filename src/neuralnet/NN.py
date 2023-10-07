@@ -1,6 +1,7 @@
 from neuralnet import Layer
 import numpy as np
 import json
+from neuralnet.clip_gradients import clip_gradients
 
 
 class NN:
@@ -54,7 +55,6 @@ class NN:
         return preds - labels
 
     def backpropagate(self, input, label, learning_rate):
-
         layers_count = len(self.layers)
         if layers_count <= 0:
             raise Exception("There is no layers to backpropagate")
@@ -70,6 +70,7 @@ class NN:
                     prev_layer, result, label
                 )  # dE/dNet
                 last_deriv = np.expand_dims(last_deriv, axis=1)
+                # last_deriv = clip_gradients(last_deriv)
                 layer.backpropagate(last_deriv, learning_rate)  # dE/dNet * dNet/dW
 
             # CASE HIDDEN LAYER
@@ -98,13 +99,16 @@ class NN:
                     last_deriv = last_deriv * layer.detector_function.deriv(
                         prev_layer.last_input
                     )
+                    # last_deriv = clip_gradients(last_deriv)
                     layer.backpropagate(last_deriv, learning_rate)
                 elif layer.type == "flatten":
                     # mengubah bentuk flatten ke bentuk sebelumnya, yaitu last_input
                     last_deriv = np.dot(last_deriv, prev_layer.weights)
                     last_deriv = layer.backpropagate(last_deriv, learning_rate)
+                    # last_deriv = clip_gradients(last_deriv)
                 else:
                     last_deriv = layer.backpropagate(last_deriv, learning_rate)
+                    # last_deriv = clip_gradients(last_deriv)
             prev_layer = layer
 
     def toJSON(self):

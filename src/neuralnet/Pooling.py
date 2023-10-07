@@ -1,6 +1,7 @@
 import json
 from neuralnet.Encoder import MyEncoder
 from neuralnet.Layer import Layer
+from neuralnet.clip_gradients import clip_gradients
 import numpy as np
 
 
@@ -97,7 +98,6 @@ class Pooling(Layer):
     def backpropagate(self, din: np.ndarray, learn_rate: float):
         # gradients are passed through the indices of greatest
         # value in the original pooling during the forward step
-
         k_h, k_w = self.pool_size
         h_new, w_new, _ = din.shape
         _, _, num_channels = self.last_input.shape
@@ -114,7 +114,7 @@ class Pooling(Layer):
                             w * s_w : k_w + (w * s_w),
                             channel,
                         ]
-                        mask = tmp == np.max(tmp)
+                        mask = (tmp == np.max(tmp)).astype(int)
                         dout[
                             h * (s_h) : (h * (s_h)) + k_h,
                             w * (s_w) : (w * (s_w)) + k_w,
@@ -137,4 +137,4 @@ class Pooling(Layer):
                             ]
                             + (din[h, w, channel]) / k_h / k_w
                         )
-        return dout
+        return clip_gradients(dout)

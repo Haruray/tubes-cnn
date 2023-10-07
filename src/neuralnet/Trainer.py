@@ -35,4 +35,5 @@ class Trainer:
             eval.precision()
             eval.recall()
             eval.f1score()
+        print("Training finished. Saving model...")
         self.model.save_model("trained.json", 4)

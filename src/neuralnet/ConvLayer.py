@@ -1,5 +1,6 @@
 from neuralnet.Layer import Layer
 from neuralnet.Activation import *
+from neuralnet.clip_gradients import clip_gradients
 import numpy as np
 
 
@@ -157,6 +158,5 @@ class ConvLayer(Layer):
                 region, i, j = feat
                 for f in range(self.num_filters):
                     dout[f] += din[i, j, f] * region
-
-        self.filter -= learn_rate * dout
+        self.filter -= learn_rate * clip_gradients(dout)
         return dout
