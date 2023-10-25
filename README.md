@@ -1,4 +1,6 @@
-# tubes-cnn
+# CNN from scratch
+
+Kelamahan dari kode ini adalah tidak optimized, terutama pada operasi convolution. Alasannya adalah proses tidak konkuren dan tidak memanfaatkan resource GPU.
 
 ## Penjelasan input gambar
 Input gambar berupa matrix numpy dengan shape `(height, weight, channel)`. Namun, Convolution layer juga menangani bentuk numpy array `(height, weight)` saja, yang berarti juga menangani gambar grayscaled
