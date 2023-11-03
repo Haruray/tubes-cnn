@@ -3,7 +3,7 @@ from neuralnet.ConvLayer import ConvLayer
 from neuralnet.Pooling import Pooling
 from neuralnet.Flatten import Flatten
 from neuralnet.Dense import Dense
-from neuralnet.lstm import LSTM
+from neuralnet.LSTM import LSTM
 import numpy as np
 import json
 
