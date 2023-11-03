@@ -3,6 +3,7 @@ from neuralnet.ConvLayer import ConvLayer
 from neuralnet.Pooling import Pooling
 from neuralnet.Flatten import Flatten
 from neuralnet.Dense import Dense
+from neuralnet.lstm import LSTM
 import numpy as np
 import json
 
@@ -78,6 +79,19 @@ def load_model(filename):
                 # Case Flatten Layer
                 elif layer_type == "flatten":
                     newLayer = Flatten()
+
+                elif layer_type == "lstm":
+                    num_units = int(layer["num_units"])
+                    input_units = int(layer["input_units"])
+                    newLayer = LSTM(input_units, num_units)
+                    newLayer.forget_weights = np.array(layer["forget_weights"])
+                    newLayer.forget_biases = np.array(layer["forget_biases"])
+                    newLayer.input_weights = np.array(layer["input_weights"])
+                    newLayer.input_biases = np.array(layer["input_biases"])
+                    newLayer.output_weights = np.array(layer["output_weights"])
+                    newLayer.output_biases = np.array(layer["output_biases"])
+                    newLayer.cell_hat_weights = np.array(layer["cell_hat_weights"])
+                    newLayer.cell_hat_biases = np.array(layer["cell_hat_biases"])
 
                 else:
                     raise Exception(

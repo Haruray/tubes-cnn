@@ -31,10 +31,11 @@ def create_sequences(data, seq_length):
 timestep = 10
 lstm_cells = 15
 X_train, y_train = create_sequences(data, timestep)
-print(X_train.shape)
 
 model = NN(X_train.shape)
 model.add(LSTM(X_train.shape[2], lstm_cells))
 flat_shape = model.layers[0].feature_map_shape
 model.add(Dense(6, flat_shape, "relu"))
+model.save_model("lstm.json", 4)
 print(model.forward_propagate(X_train[0]))
+# print(X_train[0])

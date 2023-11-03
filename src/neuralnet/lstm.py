@@ -79,7 +79,11 @@ class LSTM(Layer):
             "forget_weights": self.forget_weights.tolist(),
             "input_weights": self.input_weights.tolist(),
             "output_weights": self.output_weights.tolist(),
-            "cell_weights": self.cell_hat_weights.tolist(),
+            "cell_hat_weights": self.cell_hat_weights.tolist(),
+            "forget_biases": self.forget_biases.tolist(),
+            "input_biases": self.input_biases.tolist(),
+            "output_biases": self.output_biases.tolist(),
+            "cell_hat_biases": self.cell_hat_biases.tolist(),
         }.items()
 
     def __str__(self):
@@ -93,6 +97,8 @@ class LSTM(Layer):
         Forward propagates the input through the LSTM layer.
 
         """
+        # print(input)
+
         n_feat = input.shape[1]
 
         # prev output and prev cell
