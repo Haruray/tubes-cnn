@@ -41,36 +41,6 @@ class LSTM(Layer):
         )
         self.cell_hat_biases = np.random.randn(1, self.num_units)
 
-    def lstm_cell_calculations(self, data, prev_h, prev_cell):
-        """
-        Calculates the LSTM cell.
-
-        """
-        input_and_prev_h = np.concatenate((data, prev_h), axis=1)
-
-        # forget
-        fg = Sigmoid().calculate(
-            np.matmul(input_and_prev_h, self.forget_weights) + self.forget_biases
-        )
-        # input
-        ig = Sigmoid().calculate(
-            np.matmul(input_and_prev_h, self.input_weights) + self.input_biases
-        )
-        # output
-        og = Sigmoid().calculate(
-            np.matmul(input_and_prev_h, self.output_weights) + self.output_biases
-        )
-        # cell hat
-        ch = Tanh().calculate(
-            np.matmul(input_and_prev_h, self.cell_hat_weights) + self.cell_hat_biases
-        )
-        # new cell
-        cell = fg * prev_cell + ig * ch
-
-        logits = og * Tanh().calculate(cell)
-
-        return cell, logits
-
     def __iter__(self):
         yield from {
             "type": self.type,
@@ -107,11 +77,33 @@ class LSTM(Layer):
 
         for i in range(len(input)):
             data = input[i].reshape(1, n_feat)
-            ct, ht = self.lstm_cell_calculations(data, h_prev, c_prev)
-            h_prev = ht
-            c_prev = ct
+            input_and_prev_h = np.concatenate((data, h_prev), axis=1)
 
-        return ht
+            # forget
+            fg = Sigmoid().calculate(
+                np.matmul(input_and_prev_h, self.forget_weights) + self.forget_biases
+            )
+            # input
+            ig = Sigmoid().calculate(
+                np.matmul(input_and_prev_h, self.input_weights) + self.input_biases
+            )
+            # output
+            og = Sigmoid().calculate(
+                np.matmul(input_and_prev_h, self.output_weights) + self.output_biases
+            )
+            # cell hat
+            ch = Tanh().calculate(
+                np.matmul(input_and_prev_h, self.cell_hat_weights)
+                + self.cell_hat_biases
+            )
+            # new cell
+            cell = fg * c_prev + ig * ch
+
+            logits = og * Tanh().calculate(cell)
+            h_prev = logits
+            c_prev = cell
+
+        return logits
 
     def backpropagate(self, out: np.ndarray, learn_rate: float):
         """
