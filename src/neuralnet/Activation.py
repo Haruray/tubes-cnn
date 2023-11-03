@@ -13,11 +13,9 @@ class Activation:
 
     def deriv(self, input: np.ndarray, pred: np.ndarray = None):
         pass
-    
+
     def __iter__(self):
-        yield from {
-            "name": self.name
-        }.items()
+        yield from {"name": self.name}.items()
 
     def __str__(self):
         return json.dumps(dict(self), cls=MyEncoder, ensure_ascii=False)
@@ -33,7 +31,8 @@ class Relu(Activation):
 
     def calculate(self, input: np.ndarray):
         return np.maximum(input, np.zeros(input.shape))
-    def deriv(self, input : np.ndarray, pred : np.ndarray = None):
+
+    def deriv(self, input: np.ndarray, pred: np.ndarray = None):
         output = input.copy()
         output[output < 0] = 0
         output[output >= 0] = 1
@@ -47,6 +46,7 @@ class Sigmoid(Activation):
 
     def calculate(self, input: np.ndarray):
         return 1 / (1 + np.exp(-input))
+
     def deriv(self, input: np.ndarray, pred: np.ndarray = None):
         # print(input)
         # print(pred)
@@ -62,7 +62,17 @@ class Softmax(Activation):
 
     def calculate(self, input: np.ndarray):
         return np.exp(input) / np.sum(np.exp(input))
+
     def deriv(self, input: np.ndarray, pred: np.ndarray = None):
         copy = np.copy(pred)
-        copy[copy==input] = -(1 - copy[copy==input])
+        copy[copy == input] = -(1 - copy[copy == input])
         return copy
+
+
+class Tanh(Activation):
+    def __init__(self):
+        super().__init__()
+        self.name = "tanh"
+
+    def calculate(self, input: np.ndarray):
+        return np.tanh(input)
