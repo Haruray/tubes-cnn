@@ -41,28 +41,28 @@ class LSTM(Layer):
         )
         self.cell_hat_biases = np.random.randn(1, self.num_units)
 
-    def lstm_cell_calculations(self, data, prev_o, prev_cell):
+    def lstm_cell_calculations(self, data, prev_h, prev_cell):
         """
         Calculates the LSTM cell.
 
         """
-        input_and_prev_o = np.concatenate((data, prev_o), axis=1)
+        input_and_prev_h = np.concatenate((data, prev_h), axis=1)
 
         # forget
         fg = Sigmoid().calculate(
-            np.matmul(input_and_prev_o, self.forget_weights) + self.forget_biases
+            np.matmul(input_and_prev_h, self.forget_weights) + self.forget_biases
         )
         # input
         ig = Sigmoid().calculate(
-            np.matmul(input_and_prev_o, self.input_weights) + self.input_biases
+            np.matmul(input_and_prev_h, self.input_weights) + self.input_biases
         )
         # output
         og = Sigmoid().calculate(
-            np.matmul(input_and_prev_o, self.output_weights) + self.output_biases
+            np.matmul(input_and_prev_h, self.output_weights) + self.output_biases
         )
         # cell hat
         ch = Tanh().calculate(
-            np.matmul(input_and_prev_o, self.cell_hat_weights) + self.cell_hat_biases
+            np.matmul(input_and_prev_h, self.cell_hat_weights) + self.cell_hat_biases
         )
         # new cell
         cell = fg * prev_cell + ig * ch
@@ -102,16 +102,16 @@ class LSTM(Layer):
         n_feat = input.shape[1]
 
         # prev output and prev cell
-        o_prev = np.zeros([1, self.num_units])
+        h_prev = np.zeros([1, self.num_units])
         c_prev = np.zeros([1, self.num_units])
 
         for i in range(len(input)):
             data = input[i].reshape(1, n_feat)
-            ct, ot = self.lstm_cell_calculations(data, o_prev, c_prev)
-            o_prev = ot
+            ct, ht = self.lstm_cell_calculations(data, h_prev, c_prev)
+            h_prev = ht
             c_prev = ct
 
-        return ot
+        return ht
 
     def backpropagate(self, out: np.ndarray, learn_rate: float):
         """

@@ -32,6 +32,8 @@ timestep = 10
 lstm_cells = 15
 X_train, y_train = create_sequences(data, timestep)
 
+print(X_train.shape[2])
+
 model = NN(X_train.shape)
 model.add(LSTM(X_train.shape[2], lstm_cells))
 flat_shape = model.layers[0].feature_map_shape
