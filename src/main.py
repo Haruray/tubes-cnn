@@ -3,46 +3,38 @@ from neuralnet import NN, ConvLayer
 from neuralnet import Pooling
 from neuralnet import Flatten
 from neuralnet import Dense
+from neuralnet import LSTM
 from neuralnet import load_model
 import numpy as np
 from neuralnet import Trainer
 from neuralnet import Preprocess
+import pandas as pd
 
-data_preprocess = Preprocess("../data", False)
-train, test = data_preprocess.get_data(shuffle=True)
+df = pd.read_csv("../data/lstm/Train_stock_market.csv")
 
-# Build the model
-newModel = load_model("base.json")
+data = np.array(df[["Low", "Open", "Volume", "High", "Close", "Adjusted Close"]])
 
-trainer = Trainer(
-    newModel,
-    1,
-    0.1,
-    train.get_images()[:10],
-    train.get_labels()[:10],
-    test_input=test.get_images()[:5],
-    test_label=test.get_labels()[:5],
-)
-trainer.fit(save=False)
-# print(newModel.layers[4].weights)
 
-# image = cv2.imread("251.jpeg")
-# model = NN(image.shape)
-# model.add(
-#     ConvLayer(
-#         input_shape=image.shape,
-#         padding=0,
-#         num_filters=1,
-#         filter_size=(3, 3),
-#         stride=2,
-#         detector_function="relu",
-#     )
-# )
-# model.add(Pooling(mode="max", pool_size=(2, 2), stride=2))
-# model.add(Flatten())
+def create_sequences(data, seq_length):
+    sequences = []
+    targets = []
+    data_len = len(data)
+    for i in range(data_len - seq_length):
+        seq_end = i + seq_length
+        seq_x = data[i:seq_end]
+        seq_y = data[seq_end]
+        sequences.append(seq_x)
+        targets.append(seq_y)
+    return np.array(sequences), np.array(targets)
 
-# flat_shape = model.layers[2].feature_map_shape
-# model.add(Dense(64, flat_shape, "relu"))
 
-# model.add(Dense(1, 64, "sigmoid"))
-# model.save_model("small.json", 4)
+timestep = 10
+lstm_cells = 15
+X_train, y_train = create_sequences(data, timestep)
+print(X_train.shape)
+
+model = NN(X_train.shape)
+model.add(LSTM(X_train.shape[2], lstm_cells))
+flat_shape = model.layers[0].feature_map_shape
+model.add(Dense(6, flat_shape, "relu"))
+print(model.forward_propagate(X_train[0]))

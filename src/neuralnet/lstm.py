@@ -1,78 +1,63 @@
 import numpy as np
 from neuralnet.Layer import Layer
 from neuralnet.Activation import *
-from neuralnet.clip_gradients import clip_gradients
 
 
 class LSTM(Layer):
-    def __init__(self, num_units: int, input_units: int):
+    def __init__(self, input_units: int, num_units: int):
         super().__init__()
         self.type = "lstm"
         self.num_units = num_units
         self.input_units = input_units
         self.feature_map_shape = num_units
 
-        mean = 0
-        std = 1
-
-        # lstm cell weights
-        self.forget_gate_weights = np.random.normal(
-            mean, std, (self.input_units + self.num_units, self.num_units)
+        # cell weights
+        self.forget_gate_weights = np.random.randn(
+            self.input_units + self.num_units, self.num_units
         )
-        self.input_gate_weights = np.random.normal(
-            mean, std, (self.input_units + self.num_units, self.num_units)
+        self.input_gate_weights = np.random.randn(
+            self.input_units + self.num_units, self.num_units
         )
-        self.output_gate_weights = np.random.normal(
-            mean, std, (self.input_units + self.num_units, self.num_units)
+        self.output_gate_weights = np.random.randn(
+            self.input_units + self.num_units, self.num_units
         )
-        self.cell_gate_weights = np.random.normal(
-            mean, std, (self.input_units + self.num_units, self.num_units)
+        self.cell_gate_weights = np.random.randn(
+            self.input_units + self.num_units, self.num_units
         )
-
-        self.output_size = (1, self.num_units)
-        self.output = None
 
     def lstm_cell(self, data, prev_activation_matrix, prev_cell_matrix):
-        # get parameters
-        fgw = self.forget_gate_weights
-        igw = self.input_gate_weights
-        ogw = self.output_gate_weights
-        cgw = self.cell_gate_weights
+        # cells
+        fg = self.forget_gate_weights
+        ig = self.input_gate_weights
+        og = self.output_gate_weights
+        cg = self.cell_gate_weights
 
-        # concat batch data and prev_activation matrix
-        concat_data = np.concatenate((data, prev_activation_matrix), axis=1)
+        input_and_prev_o = np.concatenate((data, prev_activation_matrix), axis=1)
 
-        # forget gate activations
-        fa = np.matmul(concat_data, fgw)
-        fa = Sigmoid().calculate(fa)
+        # forget
+        fa = Sigmoid().calculate(np.matmul(input_and_prev_o, fg))
+        # input
+        ia = Sigmoid().calculate(np.matmul(input_and_prev_o, ig))
+        # output
+        oa = Sigmoid().calculate(np.matmul(input_and_prev_o, og))
+        # cell hat
+        ca = Tanh().calculate(np.matmul(input_and_prev_o, cg))
+        # new cell
+        cell = np.multiply(fa, prev_cell_matrix) + np.multiply(ia, ca)
 
-        # input gate activations
-        ia = np.matmul(concat_data, igw)
-        ia = Sigmoid().calculate(ia)
+        logits = np.multiply(oa, Tanh().calculate(cell))
 
-        # output gate activations
-        oa = np.matmul(concat_data, ogw)
-        oa = Sigmoid().calculate(oa)
-
-        # gate gate activations
-        ca = np.matmul(concat_data, cgw)
-        ca = Tanh().calculate(ca)
-
-        # new cell memory matrix
-        cell_memory_matrix = np.multiply(fa, prev_cell_matrix) + np.multiply(ia, ca)
-
-        # current activation matrix
-        activation_matrix = np.multiply(oa, Tanh().calculate(cell_memory_matrix))
-
-        return cell_memory_matrix, activation_matrix
+        return cell, logits
 
     def __iter__(self):
         yield from {
             "type": self.type,
             "num_units": self.num_units,
-            "detector_function": self.detector_function,
-            "weights": self.weights.tolist(),
-            "biases": self.biases.tolist(),
+            "input_units": self.input_units,
+            "forget_weights": self.forget_gate_weights.tolist(),
+            "input_weights": self.input_gate_weights.tolist(),
+            "output_weights": self.output_gate_weights.tolist(),
+            "cell_weights": self.cell_gate_weights.tolist(),
         }.items()
 
     def __str__(self):
@@ -82,23 +67,18 @@ class LSTM(Layer):
         return self.__str__()
 
     def forward_propagate(self, input: np.ndarray):
-        timestep = input.shape[0]
         n_dim = input.shape[1]
 
-        # initial activation_matrix(a0) and cell_matrix(c0)
-        a0 = np.zeros([1, self.num_units], dtype=np.float32)
-        c0 = np.zeros([1, self.num_units], dtype=np.float32)
+        # prev output and prev cell
+        o_prev = np.zeros([1, self.num_units])
+        c_prev = np.zeros([1, self.num_units])
 
-        # unroll the names
         for i in range(len(input)):
-            # get first first character batch
             data = input[i].reshape(1, n_dim)
 
-            # lstm cell
-            ct, at = self.lstm_cell(data, a0, c0)
+            ct, ot = self.lstm_cell(data, o_prev, c_prev)
 
-            # update a0 and c0 to new 'at' and 'ct' for next lstm cell
-            a0 = at
-            c0 = ct
+            o_prev = ot
+            c_prev = ct
 
-        self.output = at
+        return ot
